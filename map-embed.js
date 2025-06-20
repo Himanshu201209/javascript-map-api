@@ -17,6 +17,7 @@
         showControls: true,                               // Show map controls
         allowScrollZoom: true,                            // Allow zoom with mouse wheel
         openGoogleMaps: false,                            // Open Google Maps when clicking on the map
+        mapId: 'DEMO_MAP_ID',                             // Map ID required for advanced markers
         // Markers are now read from HTML data attributes
     };
 
@@ -51,6 +52,7 @@
             mapElement.getAttribute('data-scroll-zoom') !== 'false' : CONFIG.allowScrollZoom;
         const openGoogleMaps = mapElement.hasAttribute('data-open-google-maps') ? 
             mapElement.getAttribute('data-open-google-maps') === 'true' : CONFIG.openGoogleMaps;
+        const mapId = mapElement.getAttribute('data-map-id') || CONFIG.mapId;
 
         // Initialize the map
         initCustomMap(
@@ -68,7 +70,8 @@
             mapType,
             showControls,
             allowScrollZoom,
-            openGoogleMaps
+            openGoogleMaps,
+            mapId
         );
     });
 
@@ -88,11 +91,12 @@
         mapType = 'roadmap',
         showControls = true,
         allowScrollZoom = true,
-        openGoogleMaps = false
+        openGoogleMaps = false,
+        mapId = 'DEMO_MAP_ID'
     ) {
         // Create script element for Google Maps API
         const googleMapsScript = document.createElement('script');
-        googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=renderMap`;
+        googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=renderMap&libraries=marker`;
         googleMapsScript.async = true;
         googleMapsScript.defer = true;
         
@@ -137,7 +141,8 @@
                 scrollwheel: allowScrollZoom,
                 gestureHandling: allowScrollZoom ? 'auto' : 'none',
                 minZoom: minZoom,
-                maxZoom: maxZoom
+                maxZoom: maxZoom,
+                mapId: mapId // Required for advanced markers
             });
             
             // Fetch and apply the custom styles from the external JSON if a URL is provided
@@ -331,43 +336,40 @@
             return;
         }
         
-        const markerOptions = {
-            position: { lat, lng },
-            map: window.customGoogleMap,
-            title: title
-        };
+        const position = { lat, lng };
         
         // Add custom icon if provided
         if (iconUrl) {
             // Create a new image to get the natural dimensions
             const img = new Image();
             
-            // Create a temporary marker that will be replaced once the image loads
-            const tempMarker = new google.maps.Marker(markerOptions);
-            
+            // Create the marker with advanced marker element
             img.onload = function() {
                 // If no custom dimensions are specified, use the natural dimensions
                 const useWidth = width || img.width;
                 const useHeight = height || img.height;
                 
-                // Calculate anchor point (center horizontally, bottom vertically)
-                const anchorX = useWidth / 2;
-                const anchorY = useHeight;
+                // Create a content element for the marker
+                const contentElement = document.createElement('div');
+                contentElement.style.width = `${useWidth}px`;
+                contentElement.style.height = `${useHeight}px`;
                 
-                // Remove the temporary marker
-                tempMarker.setMap(null);
+                // Create the image element
+                const imgElement = document.createElement('img');
+                imgElement.src = iconUrl;
+                imgElement.style.width = '100%';
+                imgElement.style.height = '100%';
+                imgElement.alt = title || 'Map marker';
                 
-                // Create marker with custom icon
-                const marker = new google.maps.Marker({
-                    position: { lat, lng },
+                // Add the image to the content element
+                contentElement.appendChild(imgElement);
+                
+                // Create the advanced marker
+                const marker = new google.maps.marker.AdvancedMarkerElement({
+                    position,
                     map: window.customGoogleMap,
-                    title: title,
-                    icon: {
-                        url: iconUrl,
-                        scaledSize: new google.maps.Size(useWidth, useHeight),
-                        origin: new google.maps.Point(0, 0),
-                        anchor: new google.maps.Point(anchorX, anchorY)
-                    }
+                    title,
+                    content: contentElement
                 });
                 
                 // Add click handler if URL is provided
@@ -381,18 +383,19 @@
             };
             
             img.src = iconUrl;
-            
-            // Add click handler to temporary marker if URL is provided
-            if (url) {
-                tempMarker.addListener('click', function() {
-                    window.open(url, '_blank');
-                });
-            }
-            
-            return tempMarker;
         } else {
-            // Use default Google marker
-            const marker = new google.maps.Marker(markerOptions);
+            // Use default Google marker (PinElement)
+            const pinElement = new google.maps.marker.PinElement({
+                title,
+                scale: 1.2
+            });
+            
+            const marker = new google.maps.marker.AdvancedMarkerElement({
+                position,
+                map: window.customGoogleMap,
+                title,
+                content: pinElement.element
+            });
             
             // Add click handler if URL is provided
             if (url) {
@@ -425,6 +428,7 @@
 //         data-show-controls="true" <!-- Optional: Show/hide map controls -->
 //         data-scroll-zoom="true" <!-- Optional: Enable/disable scroll wheel zoom -->
 //         data-open-google-maps="false" <!-- Optional: Open Google Maps when clicking on the map -->
+//         data-map-id="DEMO_MAP_ID" <!-- Optional: Map ID required for advanced markers -->
 //         data-marker-icon="https://example.com/default-marker.png" <!-- Global default marker icon -->
 //         data-marker-width="40" <!-- Global default marker width -->
 //         data-marker-height="40" <!-- Global default marker height -->

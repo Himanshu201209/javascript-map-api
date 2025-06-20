@@ -20,6 +20,9 @@
         // Markers are now read from HTML data attributes
     };
 
+    // Store info windows globally to ensure only one is open at a time
+    let activeInfoWindow = null;
+
     // Initialize the map when the DOM is fully loaded
     document.addEventListener('DOMContentLoaded', function() {
         // Find the map element
@@ -208,13 +211,14 @@
             const width = parseInt(element.getAttribute('data-width') || window.markerIconWidth);
             const height = parseInt(element.getAttribute('data-height') || window.markerIconHeight);
             const url = element.getAttribute('data-url') || '';
+            const infoContent = element.getAttribute('data-info') || '';
             
             if (isNaN(lat) || isNaN(lng)) {
                 console.error('Invalid marker coordinates:', element);
                 return;
             }
             
-            addMarker(lat, lng, title, icon, width, height, url);
+            addMarker(lat, lng, title, icon, width, height, url, infoContent);
         });
         
         // Method 2: Check for data-marker-N attributes on the map element itself
@@ -224,6 +228,7 @@
         const markerWidthPattern = /^data-marker-(\d+)-width$/;
         const markerHeightPattern = /^data-marker-(\d+)-height$/;
         const markerUrlPattern = /^data-marker-(\d+)-url$/;
+        const markerInfoPattern = /^data-marker-(\d+)-info$/;
         
         // First, collect all marker data and icon data
         const markersData = {};
@@ -233,7 +238,7 @@
             
             // Check for marker data
             let match = attr.name.match(markerPattern);
-            if (match && !attr.name.endsWith('-icon') && !attr.name.endsWith('-width') && !attr.name.endsWith('-height') && !attr.name.endsWith('-url')) {
+            if (match && !attr.name.endsWith('-icon') && !attr.name.endsWith('-width') && !attr.name.endsWith('-height') && !attr.name.endsWith('-url') && !attr.name.endsWith('-info')) {
                 const markerIndex = match[1];
                 const markerValue = attr.value;
                 const parts = markerValue.split(',').map(part => part.trim());
@@ -305,6 +310,18 @@
                 }
                 markersData[markerIndex].url = url;
             }
+            
+            // Check for marker info window content
+            match = attr.name.match(markerInfoPattern);
+            if (match) {
+                const markerIndex = match[1];
+                const info = attr.value;
+                
+                if (!markersData[markerIndex]) {
+                    markersData[markerIndex] = {};
+                }
+                markersData[markerIndex].info = info;
+            }
         }
         
         // Now add all markers with their respective icons
@@ -318,14 +335,15 @@
                     marker.icon || window.defaultMarkerIcon,
                     marker.width || window.markerIconWidth,
                     marker.height || window.markerIconHeight,
-                    marker.url || ''
+                    marker.url || '',
+                    marker.info || ''
                 );
             }
         });
     }
 
     // Function to add a marker to the map
-    function addMarker(lat, lng, title = '', iconUrl = null, width = 40, height = 40, url = '') {
+    function addMarker(lat, lng, title = '', iconUrl = null, width = 40, height = 40, url = '', infoContent = '') {
         if (!window.customGoogleMap) {
             console.error('Map not initialized yet. Call initCustomMap first.');
             return;
@@ -344,6 +362,24 @@
             
             // Create a temporary marker that will be replaced once the image loads
             const tempMarker = new google.maps.Marker(markerOptions);
+            
+            // Create info window if content is provided
+            let infoWindow = null;
+            if (infoContent) {
+                infoWindow = new google.maps.InfoWindow({
+                    content: infoContent
+                });
+                
+                tempMarker.addListener('click', function() {
+                    // Close any open info window
+                    if (activeInfoWindow) {
+                        activeInfoWindow.close();
+                    }
+                    
+                    infoWindow.open(window.customGoogleMap, tempMarker);
+                    activeInfoWindow = infoWindow;
+                });
+            }
             
             img.onload = function() {
                 // If no custom dimensions are specified, use the natural dimensions
@@ -370,8 +406,31 @@
                     }
                 });
                 
-                // Add click handler if URL is provided
-                if (url) {
+                // Add click handlers
+                if (infoContent) {
+                    // Create a new info window for the permanent marker
+                    const newInfoWindow = new google.maps.InfoWindow({
+                        content: infoContent
+                    });
+                    
+                    marker.addListener('click', function() {
+                        // Close any open info window
+                        if (activeInfoWindow) {
+                            activeInfoWindow.close();
+                        }
+                        
+                        newInfoWindow.open(window.customGoogleMap, marker);
+                        activeInfoWindow = newInfoWindow;
+                        
+                        // If URL is also provided, open it in a new tab after a short delay
+                        if (url) {
+                            setTimeout(function() {
+                                window.open(url, '_blank');
+                            }, 300);
+                        }
+                    });
+                } else if (url) {
+                    // If only URL is provided (no info window)
                     marker.addListener('click', function() {
                         window.open(url, '_blank');
                     });
@@ -382,8 +441,8 @@
             
             img.src = iconUrl;
             
-            // Add click handler to temporary marker if URL is provided
-            if (url) {
+            // Add click handler to temporary marker if URL is provided and no info content
+            if (url && !infoContent) {
                 tempMarker.addListener('click', function() {
                     window.open(url, '_blank');
                 });
@@ -394,8 +453,30 @@
             // Use default Google marker
             const marker = new google.maps.Marker(markerOptions);
             
-            // Add click handler if URL is provided
-            if (url) {
+            // Create info window if content is provided
+            if (infoContent) {
+                const infoWindow = new google.maps.InfoWindow({
+                    content: infoContent
+                });
+                
+                marker.addListener('click', function() {
+                    // Close any open info window
+                    if (activeInfoWindow) {
+                        activeInfoWindow.close();
+                    }
+                    
+                    infoWindow.open(window.customGoogleMap, marker);
+                    activeInfoWindow = infoWindow;
+                    
+                    // If URL is also provided, open it in a new tab after a short delay
+                    if (url) {
+                        setTimeout(function() {
+                            window.open(url, '_blank');
+                        }, 300);
+                    }
+                });
+            } else if (url) {
+                // If only URL is provided (no info window)
                 marker.addListener('click', function() {
                     window.open(url, '_blank');
                 });
@@ -433,14 +514,17 @@
 //         data-marker-1-width="50" <!-- Custom width for marker 1 -->
 //         data-marker-1-height="50" <!-- Custom height for marker 1 -->
 //         data-marker-1-url="https://example.com/london" <!-- URL to open when marker 1 is clicked -->
+//         data-marker-1-info="<h3>London</h3><p>The capital of England</p>" <!-- Info window content for marker 1 -->
 //         data-marker-2="40.7128, -74.0060, New York"
+//         data-marker-2-info="<h3>New York</h3><p>The Big Apple</p>" <!-- Info window content for marker 2 -->
 //         data-marker-3="34.0522, -118.2437, Los Angeles"
 //         data-marker-3-icon="https://example.com/la-marker.png" <!-- Custom icon for marker 3 -->
+//         data-marker-3-info="<h3>Los Angeles</h3><p>City of Angels</p>" <!-- Info window content for marker 3 -->
 //         style="height: 500px; width: 100%;">
 //    </div>
 //
 // 2. Or use separate marker elements (legacy approach):
-//    <div data-marker data-lat="51.5074" data-lng="-0.1278" data-title="London" data-icon="https://example.com/london-marker.png" data-width="50" data-height="50" data-url="https://example.com/london"></div>
+//    <div data-marker data-lat="51.5074" data-lng="-0.1278" data-title="London" data-icon="https://example.com/london-marker.png" data-width="50" data-height="50" data-url="https://example.com/london" data-info="<h3>London</h3><p>Click for more info</p>"></div>
 //
 // 3. Add this script to your page's custom code section in the head
 // 4. The map will initialize automatically with the settings from data attributes or defaults 

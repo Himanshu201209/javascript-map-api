@@ -43,16 +43,17 @@ There are two ways to style your map:
 
 1. **JSON Styling (Default)**: Uses a JSON file to define styles
    - Set `data-styles-url` to your JSON file URL
-   - Leave `data-map-id` empty or remove it
+   - Set `data-use-json-styling="true"` (this is the default)
    - Example: `data-styles-url="https://example.com/map-styles.json"`
 
 2. **Cloud-Based Styling**: Uses Google Cloud Console to define styles
    - Create a style in Google Cloud Console
    - Create a Map ID and associate it with your style
    - Set `data-map-id` to your Map ID
-   - Example: `data-map-id="YOUR_MAP_ID"`
+   - Set `data-use-json-styling="false"`
+   - Example: `data-map-id="YOUR_MAP_ID" data-use-json-styling="false"`
 
-**Important**: JSON styling and Map ID are mutually exclusive. You must choose one approach.
+**Important**: Advanced Markers require a valid Map ID. The script uses "DEMO_MAP_ID" by default which works for testing, but for production, you should create your own Map ID.
 
 ## Configuration Options
 
@@ -65,7 +66,8 @@ There are two ways to style your map:
 | data-max-zoom | Maximum zoom level | 18 |
 | data-api-key | Google Maps API key | (required) |
 | data-styles-url | URL to JSON styles file | https://cdn.jsdelivr.net/gh/hlabsdev1/cavandish@main/map.json |
-| data-map-id | Google Cloud Map ID | (empty) |
+| data-map-id | Google Cloud Map ID | DEMO_MAP_ID |
+| data-use-json-styling | Whether to use JSON styling | true |
 | data-map-type | Map type (roadmap, satellite, hybrid, terrain) | roadmap |
 | data-show-controls | Show map controls | true |
 | data-scroll-zoom | Enable scroll wheel zoom | true |
@@ -98,26 +100,31 @@ There are two ways to style your map:
 
 ## Advanced Usage
 
-### Custom Map Styling
+### Custom Map Styling with JSON
 
-The script uses Google's Advanced Markers by default. For custom styling:
+The script can use JSON styling by default. To set up:
 
 1. Create a JSON file with your map styles (use [Google's Styling Wizard](https://mapstyle.withgoogle.com/))
 2. Host the JSON file (e.g., on GitHub)
 3. Set the `data-styles-url` attribute to your JSON file URL
+4. Make sure `data-use-json-styling` is set to "true" (default)
 
 ### Cloud-Based Styling
+
+For more advanced styling and better integration with Google Maps:
 
 1. Create a style in [Google Cloud Console](https://console.cloud.google.com/google/maps-apis/studio)
 2. Create a Map ID and associate it with your style
 3. Set the `data-map-id` attribute to your Map ID
+4. Set `data-use-json-styling` to "false"
 
 ## Troubleshooting
 
 - If markers don't appear, check the console for errors
 - If styles don't apply, ensure your JSON file is accessible and properly formatted
-- If using a Map ID, ensure you've created a style in Google Cloud Console and associated it with your Map ID
-- JSON styling doesn't work with Map ID - you must choose one approach
+- If you see "The map is initialised without a valid Map ID" warning, but markers still work, this is normal with the default DEMO_MAP_ID
+- For production use, create your own Map ID in Google Cloud Console
+- If using cloud-based styling, make sure to set `data-use-json-styling="false"`
 
 ## License
 

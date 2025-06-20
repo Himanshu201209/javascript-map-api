@@ -5,6 +5,7 @@ Easily embed a customizable Google Map into your website or Webflow project with
 ## Features
 - **Custom Map Styles**: Load styles from an external JSON file.
 - **Multiple Markers**: Add markers via data attributes or separate elements, each with custom icons, sizes, and click URLs.
+- **Info Windows**: Display custom HTML content in popups when markers are clicked.
 - **Flexible Configuration**: Control map center, zoom, type, controls, and more via HTML attributes.
 - **Webflow Friendly**: Designed for easy integration with Webflow custom code.
 - **Open Google Maps on Click**: Optionally open Google Maps when clicking on the map.
@@ -35,7 +36,9 @@ Add a `<div>` with `id="map"` to your page. You can configure the map using data
      data-marker-1-width="50"
      data-marker-1-height="50"
      data-marker-1-url="https://example.com/london"
+     data-marker-1-info="<h3>London</h3><p>The capital of England</p>"
      data-marker-2="40.7128, -74.0060, New York"
+     data-marker-2-info="<h3>New York</h3><p>The Big Apple</p>"
      data-marker-3="34.0522, -118.2437, Los Angeles"
      data-marker-3-icon="https://example.com/la-marker.png"
      style="height: 500px; width: 100%;">
@@ -59,7 +62,7 @@ Include the script in your page using one of these methods:
 You can also add markers using separate elements (legacy approach):
 
 ```html
-<div data-marker data-lat="51.5074" data-lng="-0.1278" data-title="London" data-icon="https://example.com/london-marker.png" data-width="50" data-height="50" data-url="https://example.com/london"></div>
+<div data-marker data-lat="51.5074" data-lng="-0.1278" data-title="London" data-icon="https://example.com/london-marker.png" data-width="50" data-height="50" data-url="https://example.com/london" data-info="<h3>London</h3><p>Click for more info</p>"></div>
 ```
 
 ## Data Attribute Reference
@@ -73,7 +76,10 @@ You can also add markers using separate elements (legacy approach):
 - `data-scroll-zoom`: Enable/disable scroll wheel zoom (`true`/`false`)
 - `data-open-google-maps`: Open Google Maps on click (`true`/`false`)
 - `data-marker-icon`, `data-marker-width`, `data-marker-height`: Global marker icon and size
-- `data-marker-N`, `data-marker-N-icon`, `data-marker-N-width`, `data-marker-N-height`, `data-marker-N-url`: Per-marker settings
+- `data-marker-N`: Marker location in format `"lat, lng, title"`
+- `data-marker-N-icon`, `data-marker-N-width`, `data-marker-N-height`: Per-marker icon settings
+- `data-marker-N-url`: URL to open when marker is clicked
+- `data-marker-N-info`: HTML content for info window popup
 
 ## Example
 ```html
@@ -82,11 +88,20 @@ You can also add markers using separate elements (legacy approach):
      data-lng="-74.0060"
      data-zoom="10"
      data-marker-1="40.7128, -74.0060, New York"
+     data-marker-1-info="<h3>New York City</h3><p>The city that never sleeps</p>"
      data-marker-2="34.0522, -118.2437, Los Angeles"
      style="height: 400px; width: 100%;">
 </div>
 <script src="map-embed.js"></script>
 ```
+
+## Info Windows
+You can add custom HTML content to display in popups when markers are clicked:
+
+- Use the `data-marker-N-info` attribute to specify HTML content
+- HTML tags are supported (headings, paragraphs, links, etc.)
+- Only one info window will be open at a time
+- If both `data-marker-N-info` and `data-marker-N-url` are specified, clicking the marker will open the info window and then navigate to the URL after a short delay
 
 ## Custom Map Styles
 You can use a custom map style by providing a URL to a JSON file (e.g., from [Snazzy Maps](https://snazzymaps.com/)).

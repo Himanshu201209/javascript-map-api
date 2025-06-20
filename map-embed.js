@@ -26,7 +26,7 @@
     // Custom styles for info windows
     const infoWindowStyles = `
         .gm-ui-hover-effect {
-            height: 30px;
+            height: 30px !important;
             width: 48px;
             top: 0px !important;
             right: 0px !important;

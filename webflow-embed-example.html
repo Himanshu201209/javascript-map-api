@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webflow Map Embed Example</title>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .instructions {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        pre {
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .marker-container {
+            display: none; /* Hide the marker containers */
+        }
+    </style>
+    <!-- Load the map script in the head - that's all you need! -->
+    <script src="map-embed.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Custom Google Map for Webflow</h1>
+        
+        <div class="instructions">
+            <h2>How to embed this map in Webflow:</h2>
+            <ol>
+                <li>Add a div element with <code>id="map"</code> where you want the map to appear. You can use data attributes to customize the map, add markers, and set custom marker icons:
+                <pre>&lt;div id="map" 
+     data-lat="51.5074" 
+     data-lng="-0.1278" 
+     data-zoom="12"
+     data-min-zoom="5"
+     data-max-zoom="16" 
+     data-api-key="YOUR_GOOGLE_MAPS_API_KEY"
+     data-styles-url="https://cdn.jsdelivr.net/gh/hlabsdev1/cavandish@main/map.json"
+     data-map-type="roadmap"
+     data-show-controls="true"
+     data-scroll-zoom="true"
+     data-open-google-maps="false"
+     data-marker-icon="https://cdn.prod.website-files.com/660ece57e4eaffd4b634b1d3/68554215b5e667ab1c603edc_Snazzy%20Maps%20Marker.png"
+     data-marker-width="44"
+     data-marker-height="63"
+     data-marker-1="51.5074, -0.1278, London"
+     data-marker-1-icon="https://cdn.prod.website-files.com/660ece57e4eaffd4b634b1d3/68554215b5e667ab1c603edc_Snazzy%20Maps%20Marker.png"
+     data-marker-1-url="https://london.gov.uk"
+     data-marker-2="51.51150025413154, -0.07672723460545847, 1 America Square"
+     data-marker-3="51.500149, -0.126240, London Eye"
+     data-marker-3-icon="https://cdn.prod.website-files.com/660ece57e4eaffd4b634b1d3/68554215b5e667ab1c603edc_Snazzy%20Maps%20Marker.png"
+     style="height: 500px; width: 100%;"&gt;&lt;/div&gt;</pre>
+                </li>
+                <li>In the Webflow page settings, add a custom code embed in the &lt;head&gt; section with this script:
+                <pre>&lt;script src="https://cdn.jsdelivr.net/gh/hlabsdev1/cavandish@main/map-embed.js"&gt;&lt;/script&gt;</pre>
+                </li>
+                <li>That's it! The map will automatically initialize with the settings from your data attributes.</li>
+            </ol>
+            
+            <h3>Map Configuration Attributes:</h3>
+            <ul>
+                <li><code>data-api-key</code>: Your Google Maps API key (optional, can be embedded in the script)</li>
+                <li><code>data-styles-url</code>: URL to a JSON file with map styles (optional)</li>
+                <li><code>data-lat</code> and <code>data-lng</code>: Center coordinates for the map</li>
+                <li><code>data-zoom</code>: Zoom level (1-20, higher is more zoomed in)</li>
+                <li><code>data-min-zoom</code>: Minimum zoom level (1-20, prevents zooming out too far)</li>
+                <li><code>data-max-zoom</code>: Maximum zoom level (1-20, prevents zooming in too far)</li>
+                <li><code>data-map-type</code>: Map type - "roadmap", "satellite", "hybrid", or "terrain"</li>
+                <li><code>data-show-controls</code>: Show or hide map controls (true/false)</li>
+                <li><code>data-scroll-zoom</code>: Allow zooming with mouse wheel (true/false)</li>
+                <li><code>data-open-google-maps</code>: Open Google Maps when clicking on the map (true/false)</li>
+            </ul>
+            
+            <h3>Marker Attributes:</h3>
+            <ul>
+                <li><code>data-marker-icon</code>: Sets a default icon for all markers</li>
+                <li><code>data-marker-width</code>: Sets a default width for all marker icons (in pixels)</li>
+                <li><code>data-marker-height</code>: Sets a default height for all marker icons (in pixels)</li>
+                <li><code>data-marker-1</code>, <code>data-marker-2</code>, etc.: Marker locations in format "lat, lng, title"</li>
+                <li><code>data-marker-1-icon</code>: Sets a custom icon for marker 1</li>
+                <li><code>data-marker-1-width</code>: Sets a custom width for marker 1 icon (in pixels)</li>
+                <li><code>data-marker-1-height</code>: Sets a custom height for marker 1 icon (in pixels)</li>
+                <li><code>data-marker-1-url</code>: URL to open when marker 1 is clicked</li>
+            </ul>
+            
+            <p>You can use Google's built-in marker icons or your own custom marker images.</p>
+        </div>
+        
+        <h2>Live Preview:</h2>
+        <!-- Map element with data attributes for customization and markers -->
+        <div id="map" 
+             data-lat="51.5074" 
+             data-lng="-0.1278" 
+             data-zoom="13"
+             data-min-zoom="10"
+             data-max-zoom="16"
+             data-api-key="AIzaSyA_fUqhxvP_ZU57ns47VEgkyp3BqHRbxhA"
+             data-styles-url="https://cdn.jsdelivr.net/gh/hlabsdev1/cavandish@main/map.json"
+             data-map-type="roadmap"
+             data-show-controls="true"
+             data-scroll-zoom="true"
+             data-open-google-maps="false"
+             data-marker-icon="https://cdn.prod.website-files.com/660ece57e4eaffd4b634b1d3/68554215b5e667ab1c603edc_Snazzy%20Maps%20Marker.png"
+             data-marker-width="44"
+             data-marker-height="63"
+             data-marker-1="51.5074, -0.1278, London"
+             data-marker-1-icon="https://cdn.prod.website-files.com/660ece57e4eaffd4b634b1d3/68554215b5e667ab1c603edc_Snazzy%20Maps%20Marker.png"
+             data-marker-1-url="https://london.gov.uk"
+             data-marker-2="51.51150025413154, -0.07672723460545847, 1 America Square"
+             data-marker-3="51.500149, -0.126240, London Eye"
+             data-marker-3-icon="https://cdn.prod.website-files.com/660ece57e4eaffd4b634b1d3/68554215b5e667ab1c603edc_Snazzy%20Maps%20Marker.png">
+        </div>
+    </div>
+</body>
+</html> 

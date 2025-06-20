@@ -22,6 +22,16 @@
 
     // Store info windows globally to ensure only one is open at a time
     let activeInfoWindow = null;
+    
+    // Custom styles for info windows
+    const infoWindowStyles = `
+        .gm-ui-hover-effect {
+            height: 30px !important;
+            width: 30px !important;
+            top: 0px !important;
+            right: 0px !important;
+        }
+    `;
 
     // Initialize the map when the DOM is fully loaded
     document.addEventListener('DOMContentLoaded', function() {
@@ -55,6 +65,9 @@
         const openGoogleMaps = mapElement.hasAttribute('data-open-google-maps') ? 
             mapElement.getAttribute('data-open-google-maps') === 'true' : CONFIG.openGoogleMaps;
 
+        // Add custom styles to the document
+        addCustomStyles();
+
         // Initialize the map
         initCustomMap(
             apiKey, 
@@ -74,6 +87,14 @@
             openGoogleMaps
         );
     });
+    
+    // Function to add custom styles to the document
+    function addCustomStyles() {
+        const styleElement = document.createElement('style');
+        styleElement.type = 'text/css';
+        styleElement.appendChild(document.createTextNode(infoWindowStyles));
+        document.head.appendChild(styleElement);
+    }
 
     // Main function to initialize the map
     function initCustomMap(

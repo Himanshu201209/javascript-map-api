@@ -1,1 +1,1 @@
-# javascript-map-api
+# JavaScript Google Maps API Integration

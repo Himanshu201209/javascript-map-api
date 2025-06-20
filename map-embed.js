@@ -17,7 +17,7 @@
         showControls: true,                               // Show map controls
         allowScrollZoom: true,                            // Allow zoom with mouse wheel
         openGoogleMaps: false,                            // Open Google Maps when clicking on the map
-        mapId: 'DEMO_MAP_ID',                             // Map ID required for advanced markers
+        mapId: '',                                        // Map ID for advanced markers (empty for JSON styling)
         // Markers are now read from HTML data attributes
     };
 
@@ -92,7 +92,7 @@
         showControls = true,
         allowScrollZoom = true,
         openGoogleMaps = false,
-        mapId = 'DEMO_MAP_ID'
+        mapId = ''
     ) {
         // Create script element for Google Maps API
         const googleMapsScript = document.createElement('script');
@@ -129,8 +129,8 @@
                     mapTypeId = google.maps.MapTypeId.ROADMAP;
             }
             
-            // Create map instance
-            const map = new google.maps.Map(mapElement, {
+            // Create base map options
+            const mapOptions = {
                 zoom: zoom,
                 center: center,
                 mapTypeId: mapTypeId,
@@ -141,12 +141,20 @@
                 scrollwheel: allowScrollZoom,
                 gestureHandling: allowScrollZoom ? 'auto' : 'none',
                 minZoom: minZoom,
-                maxZoom: maxZoom,
-                mapId: mapId // Required for advanced markers
-            });
+                maxZoom: maxZoom
+            };
+            
+            // Add mapId only if provided (needed for advanced markers)
+            if (mapId) {
+                mapOptions.mapId = mapId;
+            }
+            
+            // Create map instance
+            const map = new google.maps.Map(mapElement, mapOptions);
             
             // Fetch and apply the custom styles from the external JSON if a URL is provided
-            if (stylesUrl) {
+            // Note: JSON styling doesn't work with mapId, so only apply if mapId is not set
+            if (stylesUrl && !mapId) {
                 fetch(stylesUrl)
                     .then(response => {
                         if (!response.ok) {
@@ -165,6 +173,8 @@
                         console.error('Error loading map styles:', error);
                         // Continue with default Google styling
                     });
+            } else if (stylesUrl && mapId) {
+                console.warn('JSON styling cannot be applied when using a mapId. Please create a cloud-based map style in Google Cloud Console and associate it with your mapId.');
             }
                 
             // Store map instance and default marker icon in window object
@@ -428,7 +438,7 @@
 //         data-show-controls="true" <!-- Optional: Show/hide map controls -->
 //         data-scroll-zoom="true" <!-- Optional: Enable/disable scroll wheel zoom -->
 //         data-open-google-maps="false" <!-- Optional: Open Google Maps when clicking on the map -->
-//         data-map-id="DEMO_MAP_ID" <!-- Optional: Map ID required for advanced markers -->
+//         data-map-id="" <!-- Optional: Map ID for cloud-based styling (leave empty to use JSON styling) -->
 //         data-marker-icon="https://example.com/default-marker.png" <!-- Global default marker icon -->
 //         data-marker-width="40" <!-- Global default marker width -->
 //         data-marker-height="40" <!-- Global default marker height -->
@@ -448,3 +458,7 @@
 //
 // 3. Add this script to your page's custom code section in the head
 // 4. The map will initialize automatically with the settings from data attributes or defaults 
+//
+// IMPORTANT: JSON styling (via stylesUrl) and mapId are mutually exclusive. 
+// - For JSON styling: leave data-map-id empty or remove it
+// - For cloud-based styling: provide a mapId and create a style in Google Cloud Console 

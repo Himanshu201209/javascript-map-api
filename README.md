@@ -1,101 +1,124 @@
-# JavaScript Google Maps API Integration
+# Google Maps Integration for Webflow
 
-Easily embed a customizable Google Map into your website or Webflow project with support for external styles, multiple markers, and flexible configuration via HTML data attributes.
+This script allows you to easily add a customized Google Map to your Webflow site with custom markers and styling.
 
 ## Features
-- **Custom Map Styles**: Load styles from an external JSON file.
-- **Multiple Markers**: Add markers via data attributes or separate elements, each with custom icons, sizes, and click URLs.
-- **Flexible Configuration**: Control map center, zoom, type, controls, and more via HTML attributes.
-- **Webflow Friendly**: Designed for easy integration with Webflow custom code.
-- **Open Google Maps on Click**: Optionally open Google Maps when clicking on the map.
 
-## Getting Started
+- Custom map styling via JSON file
+- Advanced markers with custom icons
+- Multiple ways to add markers
+- Responsive design
+- Configurable controls and interactions
+- URL linking for markers
+- Compatible with Webflow
 
-### 1. Add the Map Container
-Add a `<div>` with `id="map"` to your page. You can configure the map using data attributes:
+## Setup Instructions
+
+1. Add a div with id="map" to your Webflow page:
+   ```html
+   <div id="map" style="height: 500px; width: 100%;"></div>
+   ```
+
+2. Add this script to your site's custom code section in the head:
+   ```html
+   <script src="https://cdn.jsdelivr.net/gh/hlabsdev1/javascript-map-api@main/map-embed.js"></script>
+   ```
+
+3. Configure the map using data attributes:
+   ```html
+   <div id="map" 
+        data-lat="51.5074" 
+        data-lng="-0.1278" 
+        data-zoom="12"
+        data-api-key="YOUR_GOOGLE_MAPS_API_KEY"
+        style="height: 500px; width: 100%;">
+   </div>
+   ```
+
+## Map Styling Options
+
+### JSON Styling vs. Cloud-Based Styling
+
+There are two ways to style your map:
+
+1. **JSON Styling (Default)**: Uses a JSON file to define styles
+   - Set `data-styles-url` to your JSON file URL
+   - Leave `data-map-id` empty or remove it
+   - Example: `data-styles-url="https://example.com/map-styles.json"`
+
+2. **Cloud-Based Styling**: Uses Google Cloud Console to define styles
+   - Create a style in Google Cloud Console
+   - Create a Map ID and associate it with your style
+   - Set `data-map-id` to your Map ID
+   - Example: `data-map-id="YOUR_MAP_ID"`
+
+**Important**: JSON styling and Map ID are mutually exclusive. You must choose one approach.
+
+## Configuration Options
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| data-lat | Center latitude | 51.5074 |
+| data-lng | Center longitude | -0.1278 |
+| data-zoom | Zoom level | 10 |
+| data-min-zoom | Minimum zoom level | 2 |
+| data-max-zoom | Maximum zoom level | 18 |
+| data-api-key | Google Maps API key | (required) |
+| data-styles-url | URL to JSON styles file | https://cdn.jsdelivr.net/gh/hlabsdev1/cavandish@main/map.json |
+| data-map-id | Google Cloud Map ID | (empty) |
+| data-map-type | Map type (roadmap, satellite, hybrid, terrain) | roadmap |
+| data-show-controls | Show map controls | true |
+| data-scroll-zoom | Enable scroll wheel zoom | true |
+| data-open-google-maps | Open Google Maps when clicking on the map | false |
+| data-marker-icon | Default marker icon URL | (Google default) |
+| data-marker-width | Default marker icon width | 40 |
+| data-marker-height | Default marker icon height | 40 |
+
+## Adding Markers
+
+### Method 1: Using data attributes on the map element
 
 ```html
-<div id="map"
-     data-lat="51.5074"
-     data-lng="-0.1278"
-     data-zoom="12"
-     data-min-zoom="2"
-     data-max-zoom="18"
-     data-api-key="YOUR_GOOGLE_MAPS_API_KEY"
-     data-styles-url="https://example.com/map-styles.json"
-     data-map-type="roadmap"
-     data-show-controls="true"
-     data-scroll-zoom="true"
-     data-open-google-maps="false"
-     data-marker-icon="https://example.com/default-marker.png"
-     data-marker-width="40"
-     data-marker-height="40"
+<div id="map" 
      data-marker-1="51.5074, -0.1278, London"
      data-marker-1-icon="https://example.com/london-marker.png"
-     data-marker-1-width="50"
-     data-marker-1-height="50"
      data-marker-1-url="https://example.com/london"
      data-marker-2="40.7128, -74.0060, New York"
-     data-marker-3="34.0522, -118.2437, Los Angeles"
-     data-marker-3-icon="https://example.com/la-marker.png"
      style="height: 500px; width: 100%;">
 </div>
 ```
 
-### 2. Add the Script
-Include the script in your page using one of these methods:
-
-#### Local file:
-```html
-<script src="map-embed.js"></script>
-```
-
-#### CDN (for Webflow):
-```html
-<script src="https://cdn.jsdelivr.net/gh/Himanshu201209/javascript-map-api@main/map-embed.js"></script>
-```
-
-### 3. (Optional) Add Markers via Elements
-You can also add markers using separate elements (legacy approach):
+### Method 2: Using separate marker elements
 
 ```html
-<div data-marker data-lat="51.5074" data-lng="-0.1278" data-title="London" data-icon="https://example.com/london-marker.png" data-width="50" data-height="50" data-url="https://example.com/london"></div>
+<div id="map" style="height: 500px; width: 100%;"></div>
+<div data-marker data-lat="51.5074" data-lng="-0.1278" data-title="London" data-icon="https://example.com/london-marker.png"></div>
+<div data-marker data-lat="40.7128" data-lng="-74.0060" data-title="New York"></div>
 ```
 
-## Data Attribute Reference
-- `data-lat`, `data-lng`: Center coordinates
-- `data-zoom`: Initial zoom level
-- `data-min-zoom`, `data-max-zoom`: Zoom limits
-- `data-api-key`: Google Maps API key (required)
-- `data-styles-url`: URL to custom map styles JSON
-- `data-map-type`: `roadmap`, `satellite`, `hybrid`, `terrain`
-- `data-show-controls`: Show/hide map controls (`true`/`false`)
-- `data-scroll-zoom`: Enable/disable scroll wheel zoom (`true`/`false`)
-- `data-open-google-maps`: Open Google Maps on click (`true`/`false`)
-- `data-marker-icon`, `data-marker-width`, `data-marker-height`: Global marker icon and size
-- `data-marker-N`, `data-marker-N-icon`, `data-marker-N-width`, `data-marker-N-height`, `data-marker-N-url`: Per-marker settings
+## Advanced Usage
 
-## Example
-```html
-<div id="map"
-     data-lat="40.7128"
-     data-lng="-74.0060"
-     data-zoom="10"
-     data-marker-1="40.7128, -74.0060, New York"
-     data-marker-2="34.0522, -118.2437, Los Angeles"
-     style="height: 400px; width: 100%;">
-</div>
-<script src="map-embed.js"></script>
-```
+### Custom Map Styling
 
-## Custom Map Styles
-You can use a custom map style by providing a URL to a JSON file (e.g., from [Snazzy Maps](https://snazzymaps.com/)).
+The script uses Google's Advanced Markers by default. For custom styling:
 
-## Notes
-- **API Key Security**: For production use, restrict your API key in the Google Cloud Console to prevent unauthorized use.
-- The map will initialize automatically on page load.
-- For Webflow, add the script in the custom code section of the page settings (in the `<head>` tag) and add the map container in your page design.
-- You can modify the default settings in the CONFIG object at the top of the script.
+1. Create a JSON file with your map styles (use [Google's Styling Wizard](https://mapstyle.withgoogle.com/))
+2. Host the JSON file (e.g., on GitHub)
+3. Set the `data-styles-url` attribute to your JSON file URL
+
+### Cloud-Based Styling
+
+1. Create a style in [Google Cloud Console](https://console.cloud.google.com/google/maps-apis/studio)
+2. Create a Map ID and associate it with your style
+3. Set the `data-map-id` attribute to your Map ID
+
+## Troubleshooting
+
+- If markers don't appear, check the console for errors
+- If styles don't apply, ensure your JSON file is accessible and properly formatted
+- If using a Map ID, ensure you've created a style in Google Cloud Console and associated it with your Map ID
+- JSON styling doesn't work with Map ID - you must choose one approach
 
 ## License
-MIT
+
+MIT License

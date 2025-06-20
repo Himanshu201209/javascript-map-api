@@ -341,6 +341,10 @@
         if (iconUrl) {
             // Create a new image to get the natural dimensions
             const img = new Image();
+            
+            // Create a temporary marker that will be replaced once the image loads
+            const tempMarker = new google.maps.Marker(markerOptions);
+            
             img.onload = function() {
                 // If no custom dimensions are specified, use the natural dimensions
                 const useWidth = width || img.width;
@@ -350,7 +354,10 @@
                 const anchorX = useWidth / 2;
                 const anchorY = useHeight;
                 
-                // Update marker icon
+                // Remove the temporary marker
+                tempMarker.setMap(null);
+                
+                // Create marker with custom icon
                 const marker = new google.maps.Marker({
                     position: { lat, lng },
                     map: window.customGoogleMap,
@@ -375,10 +382,7 @@
             
             img.src = iconUrl;
             
-            // Return a temporary marker until the image loads
-            const tempMarker = new google.maps.Marker(markerOptions);
-            
-            // Add click handler if URL is provided
+            // Add click handler to temporary marker if URL is provided
             if (url) {
                 tempMarker.addListener('click', function() {
                     window.open(url, '_blank');

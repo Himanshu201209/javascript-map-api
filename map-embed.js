@@ -1,4 +1,4 @@
-// Version 1.0.2
+// Version 1.0.4
 // Custom Google Map with Styles from External JSON
 (function() {
     // Configuration - EDIT THESE VALUES

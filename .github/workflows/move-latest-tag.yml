@@ -21,7 +21,7 @@ jobs:
 
       - name: Move 'latest' tag to this commit
         env:
-          GH_TOKEN: ${{ secrets.Cursor-local }}
+          GH_TOKEN: ${{ secrets.CURSOR_LOCAL }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

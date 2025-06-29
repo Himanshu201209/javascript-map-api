@@ -1,0 +1,30 @@
+name: Move 'latest' tag to newest release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  move-latest-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all tags
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Move 'latest' tag to this commit
+        env:
+          GH_TOKEN: ${{ secrets.Cursor-local }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f latest ${{ env.TAG_NAME }}
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
+          git push origin latest --force 

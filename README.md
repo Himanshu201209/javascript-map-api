@@ -53,9 +53,19 @@ Include the script in your page using one of these methods:
 <script src="map-embed.js"></script>
 ```
 
+#### Minified version (local):
+```html
+<script src="map-embed.min.js"></script>
+```
+
 #### CDN (for Webflow):
 ```html
 <script src="https://cdn.jsdelivr.net/gh/Himanshu201209/javascript-map-api@main/map-embed.js"></script>
+```
+
+#### Minified version (CDN):
+```html
+<script src="https://cdn.jsdelivr.net/gh/Himanshu201209/javascript-map-api@main/map-embed.min.js"></script>
 ```
 
 ### 3. (Optional) Add Markers via Elements

@@ -21,10 +21,10 @@ jobs:
 
       - name: Move 'latest' tag to this commit
         env:
-          GH_TOKEN: ${{ secrets.CURSOR_LOCAL }}
+          CURSOR_LOCAL: ${{ secrets.CURSOR_LOCAL }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -f latest ${{ env.TAG_NAME }}
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
+          git remote set-url origin https://x-access-token:${CURSOR_LOCAL}@github.com/${{ github.repository }}.git
           git push origin latest --force 

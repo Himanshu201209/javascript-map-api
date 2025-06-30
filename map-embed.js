@@ -3,14 +3,14 @@
 (function() {
     // Configuration - EDIT THESE VALUES
     const CONFIG = {
-        apiKey: 'AIzaSyA_fUqhxvP_ZU57ns47VEgkyp3BqHRbxhA', // Your Google Maps API key
+        apiKey: '', // Your Google Maps API key
         mapElementId: 'map',                              // ID of the div element for the map
         centerLat: 51.5074,                               // Default center latitude (London)
         centerLng: -0.1278,                               // Default center longitude (London)
         zoom: 10,                                         // Default zoom level
         minZoom: 2,                                       // Default minimum zoom level
         maxZoom: 18,                                      // Default maximum zoom level
-        stylesUrl: 'https://cdn.jsdelivr.net/gh/hlabsdev1/cavandish@main/map.json', // URL to the map styles JSON
+        stylesUrl: '', // URL to the map styles JSON
         defaultMarkerIcon: null,                          // Default marker icon (null = Google default)
         markerIconWidth: 40,                              // Default marker icon width in pixels
         markerIconHeight: 40,                             // Default marker icon height in pixels

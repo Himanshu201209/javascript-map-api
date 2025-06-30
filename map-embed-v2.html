@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps Advanced Markers</title>
+    <meta charset="utf-8">
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script>
+      let map;
+      
+      async function initMap() {
+        console.log("Maps JavaScript API loading...");
+        
+        // Load the required libraries
+        const { Map } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+        
+        console.log("Libraries loaded successfully");
+        
+        // Initialize the map with the provided Map ID
+        map = new Map(document.getElementById("map"), {
+          center: { lat: 43.4142989, lng: -124.2301242 },
+          zoom: 4,
+          mapId: "2a9de73d0ae140c654833e50" // Using the provided Map ID
+        });
+        
+        console.log("Map initialized with Map ID: 2a9de73d0ae140c654833e50");
+        
+        // Create and add the first marker
+        const marker1 = new AdvancedMarkerElement({
+          map,
+          position: { lat: 37.4220656, lng: -122.0840897 },
+          title: "Mountain View, CA"
+        });
+        
+        // Create a custom pin for the second marker
+        const pinElement = new PinElement({
+          background: "#4285F4",
+          borderColor: "#FFFFFF",
+          glyphColor: "#FFFFFF",
+          scale: 1.2
+        });
+        
+        // Create and add the second marker with custom pin
+        const marker2 = new AdvancedMarkerElement({
+          map,
+          position: { lat: 47.648994, lng: -122.3503845 },
+          title: "Seattle, WA",
+          content: pinElement.element
+        });
+        
+        console.log("Markers added successfully");
+      }
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+    
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_fUqhxvP_ZU57ns47VEgkyp3BqHRbxhA&callback=initMap&v=beta"
+      defer
+    ></script>
+  </body>
+</html>
